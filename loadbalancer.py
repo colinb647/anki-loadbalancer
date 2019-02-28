@@ -34,7 +34,7 @@ def DebugWindow():
     box.addWidget(txt)
 
     DEBUG = txt
-    
+
     debugmenu = QShortcut(QKeySequence("Ctrl+L"), aqt.mw)
     debugmenu.activated.connect(lambda: dlg.show())
 
@@ -68,7 +68,7 @@ def NEW_adjRevIvl(self, card, idealIvl):
                 ivlmax = nc["LBEIMinAfter"]
                 normal = False
     if normal:
-        ivlmin = idealIvl - min(qc["LBMaxBefore"], int(idealIvl*qc["LBPercentBefore"])) 
+        ivlmin = idealIvl - min(qc["LBMaxBefore"], int(idealIvl*qc["LBPercentBefore"]))
         ivlmax = idealIvl + min(qc["LBMaxAfter"], int(idealIvl*qc["LBPercentAfter"]))
         ivlmin = max(min(ivlmin, idealIvl-qc["LBMinBefore"]), 1)
         ivlmax = max(ivlmax, idealIvl+qc["LBMinAfter"])
@@ -81,7 +81,7 @@ def NEW_adjRevIvl(self, card, idealIvl):
     ivlrange = list(range(ivlmin, ivlmax+1))
     for i in ivlrange:
         due = self.today + i
-        siblings = self.col.db.scalar('''select count() from cards where due = ? and nid = ? and queue = 2''', 
+        siblings = self.col.db.scalar('''select count() from cards where due = ? and nid = ? and queue = 2''',
                                       due, card.nid)
         if siblings:
             sibling = True
@@ -108,7 +108,7 @@ def NEW_adjRevIvl(self, card, idealIvl):
         minease = min(minease, ease)
 
         cardsdue.append([i, len(cds), ease, sibling])
-    
+
     p(BeautifulSoup(card._getQA()['q'], "html.parser").getText())
     lowest = cardsdue[0]
     for c in cardsdue:
@@ -126,15 +126,15 @@ def NEW_adjRevIvl(self, card, idealIvl):
 
 
         compease = qc["LBWorkload"]*workload + (1-qc["LBWorkload"])*rease
-        p("%3d: %.2f*%.4f + %.2f*%.4f = %.4f" % (c[0], qc["LBWorkload"], workload, 1-qc["LBWorkload"], 
+        p("%3d: %.2f*%.4f + %.2f*%.4f = %.4f" % (c[0], qc["LBWorkload"], workload, 1-qc["LBWorkload"],
                                                  rease, compease))
         if c[3] == True:
             compease += 1
         c.insert(3, compease)
 
         if lowest[3] > c[3]:
-            lowest = c 
-    
+            lowest = c
+
     for c in cardsdue:
         if c[0] == lowest[0]:
             if c[4] == True:
@@ -290,7 +290,7 @@ def NEWaccept(self):
     qc["LBWorkload"]      = self.form.lbwl.value()/100.0
     qc["LBDeckScheduling"]      = self.form.lbds.isChecked()
 
-aqt.forms.preferences.Ui_Preferences.setupUi = wrap(aqt.forms.preferences.Ui_Preferences.setupUi, 
+aqt.forms.preferences.Ui_Preferences.setupUi = wrap(aqt.forms.preferences.Ui_Preferences.setupUi,
                                                     NEWsetupUi, pos="after")
 aqt.preferences.Preferences.__init__ = wrap(aqt.preferences.Preferences.__init__, NEW__init__, pos="after")
 aqt.preferences.Preferences.accept = wrap(aqt.preferences.Preferences.accept, NEWaccept, pos="before")
@@ -327,7 +327,7 @@ def NEWdconfsetupUi(self, Dialog):
     self.gridLayout.addWidget(self.lbgimina, srow, 1)
     self.gridLayout.addWidget(day6, srow, 2)
     srow += 1
-    
+
     aei = QtWidgets.QLabel("<b>&nbsp;&nbsp;&nbsp;&nbsp;Easy interval</b>")
     self.gridLayout.addWidget(aei, srow, 0, 1, 3)
     srow += 1
@@ -379,7 +379,7 @@ def NEWsaveConf(self):
     c['LBEIMinAfter'] = f.lbeimina.value()
 
 
-aqt.forms.dconf.Ui_Dialog.setupUi = wrap(aqt.forms.dconf.Ui_Dialog.setupUi, 
+aqt.forms.dconf.Ui_Dialog.setupUi = wrap(aqt.forms.dconf.Ui_Dialog.setupUi,
                                                     NEWdconfsetupUi, pos="after")
 aqt.deckconf.DeckConf.loadConf = wrap(aqt.deckconf.DeckConf.loadConf, NEWloadConf, pos="after")
 aqt.deckconf.DeckConf.saveConf = wrap(aqt.deckconf.DeckConf.saveConf, NEWsaveConf, pos="before")
@@ -403,7 +403,7 @@ def NEWdueGraph(self):
     elif self.type == 1:
         start = 0; end = 52; chunk = 7
     elif self.type == 2:
-        start = 0; end = 12*10; chunk = 30 
+        start = 0; end = 12*10; chunk = 30
 
     days = []
     maxdue = 1.0
@@ -411,8 +411,8 @@ def NEWdueGraph(self):
     maxldiff = 0.0
     minldiff = 0xFFFFFFFF*1.0
     for z in range(end):
-        cds = self.col.db.all('''select factor from cards where ? <= due and due < ? and queue = 2 
-                                 and did in %s''' % self._limit(), 
+        cds = self.col.db.all('''select factor from cards where ? <= due and due < ? and queue = 2
+                                 and did in %s''' % self._limit(),
                                  today+(chunk*z), today+(chunk*(z+1)))
         if len(cds) > maxdue:
             maxdue = len(cds)*1.0
@@ -436,7 +436,7 @@ def NEWdueGraph(self):
             maxldiff = ldiff
         if ldiff < minldiff:
             minldiff = ldiff
-        
+
         days.append([len(cds), ldiff])
 
     if maxldiff == 0:
@@ -463,9 +463,9 @@ def NEWdueGraph(self):
         d += 1
 
     out = self._title("Difficulty Forecast", "The average difficulty of reviews in the future.")
-    data = [dict(data=diffs, color=COLOR1, label="Due", stack=0), 
+    data = [dict(data=diffs, color=COLOR1, label="Due", stack=0),
             dict(data=compdiffs, color=COLOR2, label="Ease", stack=0)]
-    out += self._graph(id="fordiff", data=data, conf=dict(xaxis=dict(tickDecimals=0, min=-0.5), 
+    out += self._graph(id="fordiff", data=data, conf=dict(xaxis=dict(tickDecimals=0, min=-0.5),
                                                           yaxis=dict(tickDecimals=0, max=100)), ylabel="%")
 
     #i = []
@@ -482,9 +482,9 @@ anki.stats.CollectionStats.dueGraph = NEWdueGraph
 
 def InitConf(self):
     qc = self.conf
-    keys = {"LBPercentBefore": .1, 
+    keys = {"LBPercentBefore": .1,
             "LBPercentAfter": .1,
-            "LBMaxBefore": 6, 
+            "LBMaxBefore": 6,
             "LBMaxAfter": 4,
             "LBMinBefore": 1,
             "LBMinAfter": 1,
@@ -510,7 +510,3 @@ def InitConf(self):
 
 
 anki.collection._Collection.load = wrap(anki.collection._Collection.load, InitConf, pos="after")
-
-
-
-
